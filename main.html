@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>CB Cases</title>
+<style>
+/* ============ BASE ============ */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#121821; --panel:#1c2634; --panel2:#243144; --panel3:#2c3c52;
+  --line:#33445c; --text:#e9eef6; --muted:#8b99ad; --gold:#ffd700;
+  --green:#6fb26b; --red:#d9534f; --blue:#4b9fe8;
+  --h-top:46px; --h-nav:56px;
+}
+html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-size:14px;}
+button{font-family:inherit;cursor:pointer;border:none;color:inherit;}
+input{font-family:inherit;}
+#app{position:fixed;inset:0;display:flex;flex-direction:column;}
+
+/* ============ HEADER ============ */
+#topbar{height:var(--h-top);flex:0 0 var(--h-top);display:flex;align-items:center;gap:8px;
+  padding:0 10px;background:linear-gradient(180deg,#223044,#1a2433);border-bottom:1px solid var(--line);
+  padding-top:env(safe-area-inset-top);z-index:30;}
+.logo{font-weight:800;font-size:17px;letter-spacing:1px;color:#fff;white-space:nowrap;}
+.logo b{color:var(--gold);}
+.spacer{flex:1;}
+.pill{display:flex;align-items:center;gap:6px;background:#0e141d;border:1px solid var(--line);
+  border-radius:20px;padding:6px 12px;font-weight:700;font-size:14px;white-space:nowrap;}
+.pill .gem{color:var(--gold);}
+.icon-btn{width:34px;height:34px;border-radius:8px;background:var(--panel2);border:1px solid var(--line);
+  font-size:15px;display:flex;align-items:center;justify-content:center;flex:0 0 34px;}
+.icon-btn:active{background:var(--panel3);}
+
+/* ============ CONTENT ============ */
+#content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 12px 16px;}
+.page-title{text-align:center;font-size:18px;font-weight:800;margin:2px 0 12px;letter-spacing:.5px;}
+.back-btn{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-radius:8px;
+  padding:7px 14px;font-weight:700;margin-bottom:10px;font-size:13px;}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:14px;}
+.panel-head{background:var(--panel2);padding:10px 14px;font-weight:800;font-size:15px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.panel-body{padding:12px;}
+.muted{color:var(--muted);}
+.center{text-align:center;}
+.btn{display:inline-block;border-radius:8px;padding:10px 18px;font-weight:800;font-size:14px;background:var(--panel3);}
+.btn-primary{background:linear-gradient(180deg,#3f7de8,#2f5fc0);}
+.btn-success{background:linear-gradient(180deg,#5cb85c,#449d44);}
+.btn-danger{background:linear-gradient(180deg,#d9534f,#c9302c);}
+.btn:active{filter:brightness(1.15);}
+.btn[disabled]{opacity:.45;pointer-events:none;}
+.btn-big{padding:12px 34px;font-size:16px;border-radius:10px;}
+.badge{background:var(--gold);color:#222;border-radius:10px;padding:1px 8px;font-size:11px;font-weight:800;}
+
+/* ============ BOTTOM NAV ============ */
+#nav{flex:0 0 var(--h-nav);display:grid;grid-template-columns:repeat(7,1fr);
+  background:linear-gradient(0deg,#223044,#1a2433);border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom);z-index:30;}
+.nav-btn{background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  color:var(--muted);font-size:10px;font-weight:700;}
+.nav-btn .ni{font-size:19px;line-height:1;}
+.nav-btn.active{color:#fff;}
+.nav-btn.active .ni{filter:drop-shadow(0 0 6px rgba(255,215,0,.7));}
+
+/* ============ ITEM CARDS ============ */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:10px;}
+.item-card{cursor:pointer;}
+.item-border{border:2px solid;border-radius:8px;overflow:hidden;background:#141c28;position:relative;}
+.item-img{height:78px;background:linear-gradient(180deg,#dfe6ee,#a7b2bf);position:relative;
+  display:flex;align-items:center;justify-content:center;}
+.item-img svg{width:88%;height:64px;}
+.item-img .sil{color:#7d8794;}
+.item-title{padding:4px 4px 5px;text-align:center;}
+.item-title .w{font-size:11px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.item-title .p{font-size:10px;color:rgba(255,255,255,.92);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.corner{position:absolute;font-size:9px;font-weight:800;border-radius:4px;padding:1px 5px;z-index:2;}
+.c-cond{left:4px;top:4px;background:#e8ebef;color:#333;}
+.c-st{right:4px;top:4px;background:#cf6a32;color:#fff;}
+.c-sv{right:4px;top:4px;background:var(--gold);color:#333;}
+.c-price{left:4px;bottom:4px;background:rgba(20,26,36,.82);color:#fff;border:1px solid rgba(255,255,255,.25);}
+.c-amt{right:4px;bottom:4px;background:rgba(20,26,36,.82);color:#fff;border:1px solid rgba(255,255,255,.25);}
+.item-card.dim{opacity:.35;pointer-events:none;}
+.item-card.selected .item-border{box-shadow:0 0 0 3px var(--gold),0 0 14px rgba(255,215,0,.5);}
+
+/* ============ CASES ============ */
+.case-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;}
+.case-card{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;}
+.case-card:active{transform:scale(.97);}
+.case-svg{width:100%;height:104px;}
+.case-name{font-weight:800;font-size:13px;margin:6px 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.case-price{color:var(--gold);font-weight:800;font-size:14px;}
+
+/* ============ ROULETTE (case opening) ============ */
+.spin-window{position:relative;width:100%;max-width:760px;height:118px;margin:6px auto 14px;
+  border:2px solid #4b5b74;border-radius:8px;overflow:hidden;background:#0e141d;}
+.spin-strip{position:absolute;top:0;left:0;display:flex;height:100%;will-change:transform;}
+.spin-strip .item-card{width:88px;flex:0 0 88px;padding:6px 4px;}
+.spin-strip .item-img{height:66px;}
+.spin-strip .item-img svg{height:54px;}
+.spin-marker{position:absolute;top:0;bottom:0;left:50%;width:3px;margin-left:-1px;background:var(--gold);z-index:9;
+  box-shadow:0 0 10px rgba(255,215,0,.8);}
+.spin-shadow{position:absolute;inset:0;z-index:8;pointer-events:none;
+  box-shadow:inset 48px 0 40px -30px rgba(0,0,0,.9),inset -48px 0 40px -30px rgba(0,0,0,.9);}
+.open-row{text-align:center;margin-bottom:14px;}
+
+/* ============ DIAMONDS ROULETTE ============ */
+.status{text-align:center;font-weight:800;padding:8px;border-radius:8px;background:var(--panel2);
+  border:1px solid var(--line);margin-bottom:10px;font-size:14px;}
+.dwin{position:relative;width:100%;max-width:1050px;height:58px;margin:0 auto 10px;border-radius:8px;
+  overflow:hidden;background:#0e141d;}
+.dstrip{position:absolute;top:0;left:0;display:flex;height:100%;will-change:transform;}
+.dcell{flex:0 0 56px;width:56px;height:58px;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:800;font-size:17px;}
+.dred{background:#b04a43;} .dblack{background:#3d3d44;} .dgreen{background:#6fb26b;}
+.dshadow{position:absolute;inset:0;z-index:8;pointer-events:none;
+  box-shadow:inset 44px 0 40px -30px rgba(0,0,0,.9),inset -44px 0 40px -30px rgba(0,0,0,.9);}
+.dmarker{position:absolute;top:0;bottom:0;left:50%;width:3px;margin-left:-1px;background:#eee;z-index:9;}
+.last-rolls{display:flex;justify-content:center;gap:4px;margin-bottom:12px;flex-wrap:wrap;}
+.last-roll{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:800;color:#fff;}
+.bet-box{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center;margin-bottom:12px;}
+.bet-box input{width:110px;padding:9px;border-radius:8px;border:1px solid var(--line);background:#0e141d;
+  color:#fff;font-size:15px;font-weight:700;text-align:center;}
+.bet-box button{padding:9px 12px;border-radius:8px;background:var(--panel3);border:1px solid var(--line);font-weight:700;font-size:13px;}
+.color-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;max-width:760px;margin:0 auto;}
+.color-col{border-radius:10px;padding:0;text-align:center;overflow:hidden;border:1px solid var(--line);}
+.color-head{padding:12px 4px;font-weight:800;font-size:14px;color:#fff;width:100%;}
+.color-col .own{font-size:20px;font-weight:800;padding:8px 0 2px;}
+.color-col .tot{font-size:11px;color:var(--muted);padding-bottom:10px;}
+.won{color:var(--green)!important;} .lost{color:var(--red)!important;}
+
+/* ============ COINFLIP ============ */
+.cf-wrap{display:grid;grid-template-columns:1fr 200px 1fr;gap:10px;align-items:start;max-width:900px;margin:0 auto;}
+.cf-side{text-align:center;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px 8px;}
+.avatar{width:74px;height:74px;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;
+  font-size:34px;font-weight:900;color:#fff;}
+.av-user{background:linear-gradient(135deg,#4b9fe8,#2f5fc0);}
+.av-enemy{background:linear-gradient(135deg,#777,#444);}
+.cf-side h3{font-size:14px;margin-bottom:4px;}
+.cf-side h4{font-size:12px;color:var(--muted);font-weight:700;}
+.coin-stage{display:flex;align-items:center;justify-content:center;height:130px;perspective:800px;}
+.coin{width:108px;height:108px;position:relative;transform-style:preserve-3d;transition:transform 3.6s cubic-bezier(.2,.75,.25,1);}
+.coin-face{position:absolute;inset:0;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:30px;font-weight:900;backface-visibility:hidden;box-shadow:0 6px 16px rgba(0,0,0,.5);
+  border:6px solid #d8b54a;}
+.coin-ct{background:radial-gradient(circle at 35% 30%,#7db8f0,#2f66b0);color:#fff;}
+.coin-t{background:radial-gradient(circle at 35% 30%,#f5c76e,#c77b2a);color:#fff;transform:rotateY(180deg);}
+.cf-loading{display:none;font-size:22px;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.cf-select-head{text-align:center;font-weight:800;margin:14px 0 8px;}
+
+/* ============ CONTRACTS ============ */
+.contract-rarities{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;}
+.ct-rarity{border-radius:10px;padding:12px;text-align:center;font-weight:800;color:#fff;cursor:pointer;border:2px solid;}
+.ct-rarity small{display:block;font-weight:700;font-size:10px;opacity:.85;margin-top:3px;}
+.slots{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-width:640px;margin:0 auto 14px;}
+.slot{aspect-ratio:1;border:2px dashed #46586f;border-radius:8px;background:#141c28;overflow:hidden;position:relative;}
+.slot.empty{display:flex;align-items:center;justify-content:center;color:#46586f;font-size:26px;}
+.slot .item-card,.slot .item-border{height:100%;width:100%;}
+.slot .item-img{height:100%;}
+.slot .item-img svg{height:82%;}
+.slot .item-title{display:none;}
+.slot .x{position:absolute;right:2px;top:2px;z-index:3;background:rgba(0,0,0,.6);border-radius:50%;
+  width:20px;height:20px;line-height:20px;text-align:center;font-size:12px;}
+
+/* ============ MODAL ============ */
+#modal-overlay{position:fixed;inset:0;background:rgba(5,9,15,.82);z-index:100;display:none;
+  align-items:center;justify-content:center;padding:18px;}
+#modal-overlay.show{display:flex;}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:12px;max-width:380px;width:100%;
+  max-height:90%;overflow-y:auto;text-align:center;}
+.modal-head{padding:12px 16px;font-weight:800;font-size:16px;border-bottom:1px solid var(--line);
+  border-radius:12px 12px 0 0;display:flex;justify-content:space-between;align-items:center;}
+.modal-body{padding:18px 16px;}
+.modal-foot{padding:12px 16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.modal .big-item{width:170px;margin:0 auto;}
+.modal .big-item .item-img{height:120px;}
+.modal .big-item .item-img svg{height:96px;}
+.modal h2.item-full-name{font-size:15px;margin:12px 0 4px;}
+.modal .item-sub{color:var(--muted);font-size:13px;margin-bottom:8px;}
+.star-burst{font-size:120px;position:absolute;opacity:.18;z-index:0;pointer-events:none;}
+
+/* ============ TOAST ============ */
+#toasts{position:fixed;top:calc(var(--h-top) + 6px);left:50%;transform:translateX(-50%);z-index:200;
+  display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none;width:90%;}
+.toast{background:rgba(20,28,40,.96);border:1px solid var(--line);border-radius:10px;padding:9px 16px;
+  font-weight:700;font-size:13px;animation:tin .25s ease;box-shadow:0 6px 18px rgba(0,0,0,.4);}
+.toast.win{border-color:var(--green);color:#b9e6b6;}
+.toast.err{border-color:var(--red);color:#f0b3b1;}
+@keyframes tin{from{transform:translateY(-14px);opacity:0;}to{transform:none;opacity:1;}}
+
+/* ============ START OVERLAY ============ */
+#start-overlay{position:fixed;inset:0;z-index:300;background:radial-gradient(circle at 50% 30%,#22304a,#0c1119);
+  display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;}
+#start-overlay.hidden{display:none;}
+.start-card{max-width:420px;}
+.start-logo{font-size:40px;font-weight:900;letter-spacing:2px;margin-bottom:14px;}
+.start-logo b{color:var(--gold);}
+.start-card p{font-size:15px;color:var(--muted);margin-bottom:10px;}
+.start-card .hint{font-size:13px;}
+#start-btn{margin-top:14px;font-size:20px;font-weight:900;padding:16px 44px;border-radius:14px;
+  background:linear-gradient(180deg,#f5b83d,#d9921f);color:#241a05;box-shadow:0 8px 24px rgba(245,184,61,.35);
+  animation:pulse 1.6s ease-in-out infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
+
+/* ============ ROTATE OVERLAY ============ */
+#rotate-overlay{position:fixed;inset:0;z-index:250;background:#0c1119;display:none;
+  align-items:center;justify-content:center;text-align:center;flex-direction:column;padding:24px;}
+#rotate-overlay .ph{font-size:56px;animation:rot 1.8s ease-in-out infinite;}
+#rotate-overlay p{margin-top:14px;font-size:16px;font-weight:700;}
+@keyframes rot{0%,100%{transform:rotate(0deg);}50%{transform:rotate(90deg);}}
+@media (orientation:portrait) and (max-width:950px){#rotate-overlay{display:flex;}}
+
+/* ============ LOGS ============ */
+.log-row{display:flex;gap:10px;align-items:center;padding:9px 10px;border-bottom:1px solid var(--line);font-size:12px;}
+.log-row:last-child{border-bottom:none;}
+.log-ico{width:30px;height:30px;flex:0 0 30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.log-time{color:var(--muted);font-size:10px;white-space:nowrap;}
+.log-txt{flex:1;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:12px;}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px;text-align:center;}
+.stat b{display:block;font-size:18px;color:var(--gold);}
+.stat span{font-size:11px;color:var(--muted);font-weight:700;}
+.empty-note{text-align:center;color:var(--muted);padding:30px 10px;font-size:13px;}
+.section-label{font-weight:800;font-size:13px;color:var(--muted);margin:14px 0 8px;text-transform:uppercase;letter-spacing:1px;}
+.broke-banner{background:linear-gradient(90deg,#5a3d12,#7a5418);border:1px solid #a67c22;border-radius:10px;
+  padding:10px;text-align:center;margin-bottom:12px;font-weight:700;}
+.broke-banner button{margin-left:10px;background:var(--gold);color:#222;font-weight:900;border-radius:8px;padding:8px 16px;}
+@media (max-height:430px){
+  :root{--h-top:40px;--h-nav:50px;}
+  .item-img{height:66px;}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;}
+  .spin-window{height:104px;}
+}
+</style>
+</head>
+<body>
+
+<div id="start-overlay">
+  <div class="start-card">
+    <div class="start-logo">CB <b>CASES</b></div>
+    <p>Нажмите кнопку, чтобы открыть сайт<br>в полноэкранном режиме</p>
+    <p class="hint">📱 Поверните телефон горизонтально</p>
+    <button id="start-btn">ИГРАТЬ ▶</button>
+  </div>
+</div>
+
+<div id="rotate-overlay">
+  <div class="ph">📱</div>
+  <p>Поверните телефон горизонтально</p>
+</div>
+
+<div id="app">
+  <div id="topbar">
+    <div class="logo">CB<b>CASES</b></div>
+    <div class="spacer"></div>
+    <div class="pill"><span class="gem">◆</span><span id="balance">0</span></div>
+    <button class="icon-btn" id="mute-btn" title="Sound">🔊</button>
+    <button class="icon-btn" id="fs-btn" title="Fullscreen">⛶</button>
+    <button class="icon-btn" id="reset-btn" title="Reset progress">↺</button>
+  </div>
+
+  <div id="content"></div>
+
+  <div id="nav">
+    <button class="nav-btn" data-route="cases"><span class="ni">📦</span>Cases</button>
+    <button class="nav-btn" data-route="collections"><span class="ni">🏆</span>Collections</button>
+    <button class="nav-btn" data-route="roulette"><span class="ni">🎡</span>Roulette</button>
+    <button class="nav-btn" data-route="contracts"><span class="ni">📜</span>Contracts</button>
+    <button class="nav-btn" data-route="coinflip"><span class="ni">🪙</span>Coinflip</button>
+    <button class="nav-btn" data-route="inventory"><span class="ni">🎒</span>Inventory</button>
+    <button class="nav-btn" data-route="logs"><span class="ni">📊</span>Logs</button>
+  </div>
+</div>
+
+<div id="modal-overlay"><div class="modal" id="modal-box"></div></div>
+<div id="toasts"></div>
+
+<script>
+"use strict";
+/* ================================================================
+   DATA
+================================================================ */
+const RARITIES = {
+  consumer:  {name:"Consumer",   color:"#b0c3d9"},
+  industrial:{name:"Industrial", color:"#5e98d9"},
+  milspec:   {name:"Mil-Spec",   color:"#4b69ff"},
+  restricted:{name:"Restricted", color:"#8847ff"},
+  classified:{name:"Classified", color:"#d32ce6"},
+  covert:    {name:"Covert",     color:"#eb4b4b"},
+  rare:      {name:"★ Rare",     color:"#ffd700"}
+};
+const RARITY_ORDER = ["consumer","industrial","milspec","restricted","classified","covert","rare"];
+const CONDS = [
+  {abbr:"FN",mult:1.15},{abbr:"MW",mult:1.0},{abbr:"FT",mult:0.85},
+  {abbr:"WW",mult:0.72},{abbr:"BS",mult:0.6}
+];
+const WEAPONS = {
+  rifle:["AK-47","M4A4","M4A1-S","SG 553","AUG","FAMAS","Galil AR"],
+  sniper:["AWP","SSG 08","SCAR-20","G3SG1"],
+  smg:["MP9","MAC-10","MP7","MP5-SD","UMP-45","P90","PP-Bizon"],
+  pistol:["Glock-18","USP-S","P250","Desert Eagle","Five-SeveN","Tec-9","P2000","CZ75-Auto"],
+  heavy:["Nova","XM1014","Sawed-Off","MAG-7","M249","Negev"],
+  knife:["★ Karambit","★ M9 Bayonet","★ Butterfly Knife","★ Flip Knife","★ Huntsman Knife","★ Falchion Knife"]
+};
+const PATTERNS = {
+  consumer:["Forest DDPAT","Safari Mesh","Groundwater","Rust Coat","Urban DDPAT"],
+  industrial:["Night","Storm","Scorched","Blue Steel","Faded Zebra"],
+  milspec:["Nitro","Guardian","Blue Laminate","Contractor","Corticera"],
+  restricted:["Redline","Asiimov","Hyper Beast","Vulcan","Cyrex"],
+  classified:["Neon Revolution","Marble Fade","Fire Serpent","Fade","Bloodsport"],
+  covert:["Dragon Lore","Medusa","Howl","Wildfire","The Prince"],
+  rare:["Doppler","Fade","Slaughter","Crimson Web","Lore","Marble Fade","Tiger Tooth"]
+};
+const PRICE_RANGE = {
+  consumer:[5,18], industrial:[18,55], milspec:[55,180], restricted:[180,550],
+  classified:[550,1600], covert:[1600,4500], rare:[5000,14000]
+};
+const W_LOW  = {consumer:45,industrial:30,milspec:18,restricted:5.5,classified:1.1,covert:0.25,rare:0.15};
+const W_MID  = {industrial:22,milspec:58,restricted:15.5,classified:3.4,covert:0.85,rare:0.25};
+const W_HIGH = {milspec:60,restricted:24,classified:10.5,covert:4.2,rare:1.3};
+const W_SV3  = {industrial:15,milspec:55,restricted:20,classified:7,covert:2.5,rare:0.5};
+const W_SV4  = {milspec:55,restricted:27,classified:12,covert:5,rare:1};
+const ALL_TYPES = ["rifle","sniper","smg","pistol","heavy"];
+const CASES = [
+  {id:"chroma2",  name:"Chroma 2 Case",            price:100, color:"#2fa8c4", weights:W_LOW, pool:["rifle","pistol","smg","sniper","heavy"]},
+  {id:"go",       name:"CS:GO Weapon Case",        price:130, color:"#d9832f", weights:W_LOW, pool:["rifle","pistol","smg","heavy"]},
+  {id:"phoenix",  name:"Operation Phoenix Case",   price:180, color:"#b062d8", weights:W_MID, pool:["rifle","pistol","smg","sniper"]},
+  {id:"huntsman", name:"Huntsman Weapon Case",     price:230, color:"#c0563f", weights:W_MID, pool:["rifle","sniper","smg","heavy","pistol"]},
+  {id:"falchion", name:"Falchion Case",            price:270, color:"#57b35a", weights:W_MID, pool:["rifle","pistol","smg","heavy"]},
+  {id:"shadow",   name:"Shadow Case",              price:330, color:"#3f6fc0", weights:W_HIGH,pool:["rifle","pistol","sniper","smg"]},
+  {id:"breakout", name:"Operation Breakout Case",  price:400, color:"#c93f55", weights:W_HIGH,pool:["rifle","sniper","pistol","heavy","smg"]},
+  {id:"spectrum", name:"Spectrum Case",            price:460, color:"#35c0c8", weights:W_HIGH,pool:["rifle","sniper","pistol","smg"]}
+];
+const COLLECTIONS = [
+  {id:"dust2",    name:"Dust 2 Collection",   price:300, color:"#c9a353", weights:W_SV3, sv:true, pool:ALL_TYPES},
+  {id:"mirage",   name:"Mirage Collection",   price:420, color:"#7d62d8", weights:W_SV3, sv:true, pool:["rifle","pistol","sniper","smg"]},
+  {id:"inferno",  name:"Inferno Collection",  price:560, color:"#d86a3f", weights:W_SV4, sv:true, pool:["rifle","sniper","pistol","heavy"]},
+  {id:"overpass", name:"Overpass Collection", price:700, color:"#3fa0c9", weights:W_SV4, sv:true, pool:ALL_TYPES}
+];
+const CASE_MAP = {};
+[...CASES,...COLLECTIONS].forEach(c=>CASE_MAP[c.id]=c);
+
+/* ================================================================
+   STATE / STORAGE
+================================================================ */
+const SAVE_KEY = "cb_cases_save_v1";
+let state;
+function defaultState(){
+  return {points:5000, inventory:[], logs:[], stats:{cases:0,roulette:0,contracts:0,coinflip:0,wagered:0}, muted:false};
+}
+function load(){
+  try{
+    const raw = localStorage.getItem(SAVE_KEY);
+    if(raw){ state = Object.assign(defaultState(), JSON.parse(raw)); return; }
+  }catch(e){}
+  state = defaultState();
+}
+function save(){
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(state)); }catch(e){}
+}
+load();
+
+/* ================================================================
+   HELPERS
+================================================================ */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+const fmt = n => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g," ");
+function toast(msg, kind){
+  const t = document.createElement("div");
+  t.className = "toast"+(kind?" "+kind:"");
+  t.innerHTML = msg;
+  $("#toasts").appendChild(t);
+  setTimeout(()=>{ t.style.opacity="0"; t.style.transition="opacity .4s"; setTimeout(()=>t.remove(),400); }, 2600);
+}
+function addLog(icon, color, text){
+  state.logs.unshift({t:Date.now(), icon, color, text});
+  if(state.logs.length>60) state.logs.length=60;
+  save();
+}
+function timeAgo(ts){
+  const d = Math.max(0, Date.now()-ts)/1000;
+  if(d<60) return "just now";
+  if(d<3600) return Math.floor(d/60)+"m ago";
+  if(d<86400) return Math.floor(d/3600)+"h ago";
+  return Math.floor(d/86400)+"d ago";
+}
+
+/* ---- audio ---- */
+let audioCtx = null, muted = state.muted;
+function beep(freq, dur, vol){
+  if(muted) return;
+  try{
+    audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = "square"; o.frequency.value = freq||880;
+    g.gain.value = vol||0.06;
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start();
+    g.gain.exponentialRampToValueAtTime(0.0008, audioCtx.currentTime + (dur||0.05));
+    o.stop(audioCtx.currentTime + (dur||0.05));
+  }catch(e){}
+}
+let tickTimer = null;
+function startTicks(){
+  stopTicks();
+  let n = 0;
+  tickTimer = setInterval(()=>{ beep(600 + (n%6)*60, 0.03, 0.05); n++; }, 110);
+}
+function stopTicks(){ if(tickTimer){ clearInterval(tickTimer); tickTimer=null; } }
+
+/* ================================================================
+   WEAPON SILHOUETTE SVGs
+================================================================ */
+function weaponSVG(type){
+  const c = '<g fill="currentColor" stroke="rgba(0,0,0,.25)" stroke-width="1">';
+  const shapes = {
+    rifle: c+
+      '<rect x="14" y="40" width="26" height="15" rx="4"/><rect x="34" y="42" width="120" height="11" rx="2"/>'+
+      '<rect x="150" y="40" width="52" height="7" rx="2"/><rect x="112" y="34" width="16" height="7" rx="2"/>'+
+      '<rect x="66" y="53" width="13" height="27" rx="2" transform="rotate(14 72 53)"/>'+
+      '<rect x="100" y="53" width="11" height="21" rx="2"/><rect x="44" y="53" width="16" height="7" rx="2"/></g>',
+    sniper: c+
+      '<rect x="8" y="42" width="24" height="13" rx="4"/><rect x="28" y="44" width="150" height="9" rx="2"/>'+
+      '<rect x="176" y="42" width="34" height="6" rx="2"/><rect x="86" y="28" width="44" height="9" rx="4"/>'+
+      '<rect x="96" y="37" width="8" height="7"/><rect x="118" y="37" width="8" height="7"/>'+
+      '<rect x="66" y="53" width="13" height="26" rx="2" transform="rotate(10 72 53)"/>'+
+      '<rect x="128" y="53" width="10" height="19" rx="2"/></g>',
+    smg: c+
+      '<rect x="22" y="41" width="20" height="14" rx="4"/><rect x="38" y="43" width="104" height="10" rx="2"/>'+
+      '<rect x="138" y="41" width="40" height="6" rx="2"/><rect x="56" y="33" width="12" height="9" rx="2"/>'+
+      '<rect x="70" y="53" width="12" height="25" rx="2"/><rect x="104" y="53" width="10" height="19" rx="2"/></g>',
+    pistol: c+
+      '<rect x="66" y="34" width="72" height="10" rx="2"/><rect x="132" y="36" width="26" height="6" rx="2"/>'+
+      '<rect x="82" y="44" width="15" height="28" rx="3" transform="rotate(9 89 44)"/>'+
+      '<rect x="66" y="42" width="18" height="7" rx="2"/><rect x="104" y="44" width="8" height="10" rx="2"/></g>',
+    heavy: c+
+      '<rect x="12" y="41" width="24" height="14" rx="4"/><rect x="32" y="43" width="130" height="10" rx="3"/>'+
+      '<rect x="158" y="45" width="38" height="7" rx="3"/><rect x="58" y="53" width="30" height="8" rx="3"/>'+
+      '<rect x="104" y="53" width="10" height="20" rx="2"/><rect x="46" y="53" width="9" height="14" rx="2"/></g>',
+    knife:
+      '<g fill="currentColor" stroke="rgba(0,0,0,.25)" stroke-width="1">'+
+      '<path d="M28 74 L146 28 C158 24 170 32 162 42 L66 82 C54 88 36 84 28 74 Z"/>'+
+      '<rect x="146" y="20" width="52" height="13" rx="4" transform="rotate(-20 146 26)"/>'+
+      '<rect x="141" y="30" width="10" height="10" transform="rotate(-20 146 35)"/></g>'
+  };
+  return '<svg viewBox="0 0 220 90" class="sil">'+(shapes[type]||shapes.rifle)+'</svg>';
+}
+function caseSVG(def){
+  const c = def.color, gid = "sh_"+def.id;
+  return '<svg viewBox="0 0 200 150" class="case-svg">'+
+    '<ellipse cx="100" cy="138" rx="70" ry="8" fill="rgba(0,0,0,.35)"/>'+
+    '<rect x="34" y="52" width="132" height="78" rx="8" fill="'+c+'"/>'+
+    '<rect x="34" y="52" width="132" height="78" rx="8" fill="url(#'+gid+')" fill-opacity="0.25"/>'+
+    '<rect x="28" y="34" width="144" height="26" rx="9" fill="'+c+'" stroke="rgba(0,0,0,.35)" stroke-width="2"/>'+
+    '<rect x="28" y="48" width="144" height="10" fill="rgba(0,0,0,.25)"/>'+
+    '<rect x="90" y="60" width="20" height="24" rx="3" fill="rgba(0,0,0,.45)"/>'+
+    '<circle cx="100" cy="72" r="4" fill="#ffd700"/>'+
+    '<rect x="34" y="52" width="14" height="14" rx="4" fill="rgba(255,255,255,.35)"/>'+
+    '<rect x="152" y="52" width="14" height="14" rx="4" fill="rgba(255,255,255,.35)"/>'+
+    '<rect x="34" y="116" width="14" height="14" rx="4" fill="rgba(0,0,0,.3)"/>'+
+    '<rect x="152" y="116" width="14" height="14" rx="4" fill="rgba(0,0,0,.3)"/>'+
+    '<defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="0" y2="1">'+
+    '<stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/></linearGradient></defs></svg>';
+}
+
+/* ================================================================
+   ITEM LOGIC
+================================================================ */
+let UID = 1;
+function rollRarity(weights){
+  let sum = 0; for(const k in weights) sum += weights[k];
+  let r = Math.random()*sum;
+  for(const k in weights){ r -= weights[k]; if(r<=0) return k; }
+  return "milspec";
+}
+function makeItem(def, forcedRarity){
+  const rarity = forcedRarity || rollRarity(def.weights);
+  const type = (rarity==="rare") ? "knife" : pick(def.pool || ALL_TYPES);
+  const weapon = pick(WEAPONS[type]);
+  const pattern = pick(PATTERNS[rarity]);
+  const cond = rarity==="rare" ? pick([CONDS[0],CONDS[0],CONDS[1],CONDS[2]]) : pick(CONDS);
+  const st = !def.sv && rarity!=="consumer" && rarity!=="industrial" && Math.random()<0.1;
+  const sv = !!def.sv && rarity!=="rare";
+  const [lo,hi] = PRICE_RANGE[rarity];
+  let price = (lo + Math.random()*(hi-lo)) * cond.mult * (st?1.6:1) * (sv?2.2:1);
+  return {uid:"u"+(UID++)+"_"+Date.now().toString(36), type, weapon, pattern, rarity,
+          cond:cond.abbr, st:!!st, sv:!!sv, price:Math.max(1,Math.round(price))};
+}
+function itemNameHTML(it){
+  return (it.st?'<span style="color:#cf6a32">StatTrak™ </span>':"")+
+         (it.sv?'<span style="color:#ffd700">Souvenir </span>':"")+esc(it.weapon);
+}
+function itemCardHTML(it, opts){
+  opts = opts||{};
+  const col = RARITIES[it.rarity].color;
+  return '<div class="item-card '+(opts.extra||"")+'" '+(it.uid?'data-uid="'+it.uid+'"':"")+'>'+
+    '<div class="item-border" style="border-color:'+col+'">'+
+      '<div class="item-img">'+
+        weaponSVG(it.type)+
+        '<span class="corner c-cond">'+it.cond+'</span>'+
+        (it.st?'<span class="corner c-st">ST</span>':"")+
+        (it.sv?'<span class="corner c-sv">SV</span>':"")+
+        (opts.showPrice!==false?'<span class="corner c-price">◆ '+fmt(it.price)+'</span>':"")+
+        (opts.amt?'<span class="corner c-amt">×'+opts.amt+'</span>':"")+
+      '</div>'+
+      '<div class="item-title" style="background:'+col+'">'+
+        '<div class="w">'+(it.st?'ST™ ':it.sv?'SV ':"")+esc(it.weapon.replace(/^★ /,""))+'</div>'+
+        '<div class="p">'+esc(it.pattern)+'</div>'+
+      '</div>'+
+    '</div></div>';
+}
+function findItem(uid){ return state.inventory.find(i=>i.uid===uid); }
+
+/* ================================================================
+   MODAL
+================================================================ */
+function showModal(html){
+  $("#modal-box").innerHTML = html;
+  $("#modal-overlay").classList.add("show");
+}
+function closeModal(){ $("#modal-overlay").classList.remove("show"); }
+$("#modal-overlay").addEventListener("click", e=>{
+  if(e.target.id==="modal-overlay") closeModal();
+});
+function itemModal(it, actions){
+  const col = RARITIES[it.rarity].color;
+  showModal(
+    '<div class="modal-head" style="background:'+col+';color:#fff">'+
+      '<span>'+(it.rarity==="rare"?"★ RARE ITEM!":"New item")+'</span>'+
+      '<button onclick="closeModal()" style="background:rgba(0,0,0,.25);border-radius:6px;width:28px;height:28px;font-size:16px;">✕</button>'+
+    '</div>'+
+    '<div class="modal-body" style="position:relative;">'+
+      (it.rarity==="rare"?'<div class="star-burst">★</div>':"")+
+      '<div class="big-item">'+itemCardHTML(it,{showPrice:false})+'</div>'+
+      '<h2 class="item-full-name">'+itemNameHTML(it)+'</h2>'+
+      '<div class="item-sub">'+esc(it.pattern)+' · '+it.cond+' · '+RARITIES[it.rarity].name+'</div>'+
+    '</div>'+
+    '<div class="modal-foot">'+actions+'</div>'
+  );
+}
+
+/* ================================================================
+   ROUTER
+================================================================ */
+let pageState = {};   // per-page transient state
+function navigate(hash){ location.hash = hash; }
+function currentRoute(){
+  const h = (location.hash||"#/cases").replace(/^#\//,"");
+  const parts = h.split("/");
+  return {page:parts[0]||"cases", args:parts.slice(1)};
+}
+function render(){
+  const {page, args} = currentRoute();
+  $$("#nav .nav-btn").forEach(b=>b.classList.toggle("active", b.dataset.route===page || (page==="case"&&b.dataset.route==="cases") || (page==="contract"&&b.dataset.route==="contracts")));
+  pageState = {};
+  const c = $("#content");
+  c.scrollTop = 0;
+  if(page==="cases") renderCases(c, false);
+  else if(page==="collections") renderCases(c, true);
+  else if(page==="case") renderCasePage(c, args[0]);
+  else if(page==="roulette") renderRoulette(c);
+  else if(page==="contracts") renderContracts(c);
+  else if(page==="contract") renderContractPage(c, args[0], args[1]==="st");
+  else if(page==="coinflip") renderCoinflip(c);
+  else if(page==="inventory") renderInventory(c);
+  else if(page==="logs") renderLogs(c);
+  else renderCases(c, false);
+  updateBalance();
+}
+window.addEventListener("hashchange", render);
+
+/* ================================================================
+   PAGES: CASES LIST
+================================================================ */
+function brokeBanner(){
+  if(state.points < 100)
+    return '<div class="broke-banner">Out of diamonds? <button data-action="claim">Claim +1 000 ◆</button></div>';
+  return "";
+}
+function renderCases(c, collections){
+  const defs = collections ? COLLECTIONS : CASES;
+  let html = '<div class="page-title">'+(collections?"Collections":"Cases")+'</div>'+brokeBanner();
+  html += '<div class="case-grid">';
+  defs.forEach(d=>{
+    html += '<div class="case-card" data-action="case-page" data-id="'+d.id+'">'+
+      caseSVG(d)+
+      '<div class="case-name">'+esc(d.name)+'</div>'+
+      '<div class="case-price">◆ '+fmt(d.price)+'</div></div>';
+  });
+  html += '</div>';
+  c.innerHTML = html;
+}
+
+/* ================================================================
+   PAGES: CASE OPENING
+================================================================ */
+function renderCasePage(c, id){
+  const def = CASE_MAP[id];
+  if(!def){ c.innerHTML = ""; navigate("#/cases"); return; }
+  // deterministic-ish preview of possible drops
+  const preview = [];
+  const tiers = Object.keys(def.weights).sort((a,b)=>def.weights[b]-def.weights[a]);
+  tiers.forEach(t=>{
+    for(let i=0;i<2;i++){
+      const it = makeItem(def, t);
+      preview.push(it);
+    }
+  });
+  c.innerHTML =
+    '<button class="back-btn" data-action="back">← Back</button>'+
+    '<div class="panel"><div class="panel-head"><span>'+esc(def.name)+'</span>'+
+    '<span class="case-price">◆ '+fmt(def.price)+'</span></div>'+
+    '<div class="panel-body">'+
+      '<div class="spin-window"><div class="spin-marker"></div><div class="spin-strip" id="spin-strip"></div><div class="spin-shadow"></div></div>'+
+      '<div class="open-row"><button class="btn btn-primary btn-big" id="btn-open">📦 Open case · ◆'+fmt(def.price)+'</button></div>'+
+      '<div class="section-label center">Possible drops</div>'+
+      '<div class="grid">'+preview.map(it=>itemCardHTML(it)).join("")+'</div>'+
+    '</div></div>';
+
+  // fill idle strip
+  const strip = $("#spin-strip");
+  const idle = [];
+  for(let i=0;i<24;i++) idle.push(makeItem(def));
+  strip.innerHTML = idle.map(it=>itemCardHTML(it)).join("");
+
+  let spinning = false;
+  $("#btn-open").addEventListener("click", ()=>{
+    if(spinning) return;
+    if(state.points < def.price){ toast("Not enough diamonds ◆","err"); return; }
+    spinning = true;
+    state.points -= def.price;
+    state.stats.cases++;
+    save(); updateBalance();
+
+    const winner = makeItem(def);
+    const WIN = 48;
+    const items = [];
+    for(let i=0;i<60;i++) items.push(i===WIN ? winner : makeItem(def));
+    strip.style.transition = "none";
+    strip.style.transform = "translateX(0)";
+    strip.innerHTML = items.map(it=>itemCardHTML(it)).join("");
+
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      const cellW = strip.firstElementChild.offsetWidth;
+      const winW = strip.parentElement.clientWidth;
+      const jitter = (Math.random()*cellW*0.6 - cellW*0.3);
+      const target = -(WIN*cellW - winW/2 + cellW/2 + jitter);
+      startTicks();
+      strip.style.transition = "transform 6s cubic-bezier(.12,.62,.16,1)";
+      strip.style.transform = "translateX("+target+"px)";
+      setTimeout(()=>{
+        stopTicks();
+        spinning = false;
+        state.inventory.push(winner);
+        save();
+        beep(1200,0.25,0.12);
+        addLog("📦", def.color, "Opened <b>"+esc(def.name)+"</b> → "+esc(winner.weapon)+" | "+esc(winner.pattern)+" (◆"+fmt(winner.price)+")");
+        itemModal(winner,
+          '<button class="btn btn-danger" data-action="sell-keep" data-uid="'+winner.uid+'">Sell for ◆'+fmt(winner.price)+'</button>'+
+          '<button class="btn btn-success" onclick="closeModal()">Keep</button>');
+      }, 6100);
+    }));
+  });
+}
+
+/* ================================================================
+   PAGES: DIAMONDS ROULETTE
+================================================================ */
+function dcolor(n){ return n===0 ? "green" : (n<=7 ? "red" : "black"); }
+function renderRoulette(c){
+  pageState.bets = {red:0, green:0, black:0};
+  pageState.lastRolls = [];
+  pageState.spinning = false;
+
+  c.innerHTML =
+    '<div class="page-title">Roulette</div>'+
+    brokeBanner()+
+    '<div class="panel"><div class="panel-body">'+
+      '<div class="status" id="r-status">Place your bets...</div>'+
+      '<div class="dwin"><div class="dmarker"></div><div class="dstrip" id="d-strip"></div><div class="dshadow"></div></div>'+
+      '<div class="last-rolls" id="last-rolls"></div>'+
+      '<div class="bet-box">'+
+        '<button class="pill" style="cursor:default">Balance: <span id="r-bal">'+fmt(state.points)+'</span> ◆</button>'+
+        '<input type="number" id="r-bet" min="0" inputmode="numeric" placeholder="Bet">'+
+        '<button data-rbet="clear">Clr</button>'+
+        '<button data-rbet="1">+1</button><button data-rbet="10">+10</button>'+
+        '<button data-rbet="100">+100</button><button data-rbet="1000">+1k</button>'+
+        '<button data-rbet="x2">×2</button><button data-rbet="half">½</button>'+
+        '<button data-rbet="max">Max</button>'+
+      '</div>'+
+      '<div class="open-row"><button class="btn btn-success btn-big" id="btn-spin">🎡 Spin</button></div>'+
+      '<div class="color-cols">'+
+        '<div class="color-col"><button class="color-head dred" data-place="red">1 — 7 · ×2</button>'+
+          '<div class="own" id="own-red">0</div><div class="tot">Bet: <span id="tot-red">0</span> ◆</div></div>'+
+        '<div class="color-col"><button class="color-head dgreen" data-place="green">0 · ×14</button>'+
+          '<div class="own" id="own-green">0</div><div class="tot">Bet: <span id="tot-green">0</span> ◆</div></div>'+
+        '<div class="color-col"><button class="color-head dblack" data-place="black">8 — 14 · ×2</button>'+
+          '<div class="own" id="own-black">0</div><div class="tot">Bet: <span id="tot-black">0</span> ◆</div></div>'+
+      '</div>'+
+    '</div></div>';
+
+  const strip = $("#d-strip");
+  const init = [];
+  for(let i=0;i<30;i++) init.push(Math.floor(Math.random()*15));
+  strip.innerHTML = init.map(n=>'<div class="dcell d'+dcolor(n)+'">'+n+'</div>').join("");
+
+  const input = $("#r-bet");
+  function betAmount(){
+    let v = parseInt(input.value,10);
+    if(isNaN(v)||v<0) v=0;
+    return Math.min(v, state.points);
+  }
+  c.querySelectorAll("[data-rbet]").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      const cur = parseInt(input.value,10)||0;
+      const act = b.dataset.rbet;
+      if(act==="clear") input.value="";
+      else if(act==="1") input.value=Math.min(state.points,cur+1);
+      else if(act==="10") input.value=Math.min(state.points,cur+10);
+      else if(act==="100") input.value=Math.min(state.points,cur+100);
+      else if(act==="1000") input.value=Math.min(state.points,cur+1000);
+      else if(act==="x2") input.value=Math.min(state.points,cur*2);
+      else if(act==="half") input.value=Math.floor(state.points/2);
+      else if(act==="max") input.value=state.points;
+    });
+  });
+  c.querySelectorAll("[data-place]").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      if(pageState.spinning) return;
+      const v = betAmount();
+      if(v<=0){ toast("Enter a bet amount","err"); return; }
+      const col = b.dataset.place;
+      state.points -= v;
+      pageState.bets[col] += v;
+      save(); updateBalance();
+      $("#r-bal").textContent = fmt(state.points);
+      $("#own-"+col).textContent = fmt(pageState.bets[col]);
+      $("#tot-"+col).textContent = fmt(pageState.bets[col]);
+      beep(500,0.05,0.07);
+      input.value = "";
+    });
+  });
+
+  $("#btn-spin").addEventListener("click", ()=>{
+    if(pageState.spinning) return;
+    const bets = pageState.bets;
+    const total = bets.red+bets.green+bets.black;
+    if(total<=0){ toast("Place at least one bet","err"); return; }
+    pageState.spinning = true;
+    state.stats.roulette++;
+    state.stats.wagered += total;
+    save();
+    $("#r-status").textContent = "Rolling...";
+
+    const roll = Math.floor(Math.random()*15);
+    const WIN = 45;
+    const nums = [];
+    for(let i=0;i<58;i++) nums.push(i===WIN ? roll : Math.floor(Math.random()*15));
+    strip.style.transition="none"; strip.style.transform="translateX(0)";
+    strip.innerHTML = nums.map(n=>'<div class="dcell d'+dcolor(n)+'">'+n+'</div>').join("");
+
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      const cellW = 56;
+      const winW = strip.parentElement.clientWidth;
+      const jitter = Math.random()*40-20;
+      const target = -(WIN*cellW - winW/2 + cellW/2 + jitter);
+      startTicks();
+      strip.style.transition = "transform 6s cubic-bezier(.12,.62,.16,1)";
+      strip.style.transform = "translateX("+target+"px)";
+      setTimeout(()=>{
+        stopTicks();
+        pageState.spinning = false;
+        const win = dcolor(roll);
+        let payout = 0;
+        if(win==="red")   payout = bets.red*2;
+        if(win==="black") payout = bets.black*2;
+        if(win==="green") payout = bets.green*14;
+        state.points += payout;
+        save(); updateBalance();
+        $("#r-bal").textContent = fmt(state.points);
+
+        // last rolls
+        pageState.lastRolls.unshift(roll);
+        if(pageState.lastRolls.length>12) pageState.lastRolls.length=12;
+        $("#last-rolls").innerHTML = pageState.lastRolls
+          .map(n=>'<div class="last-roll d'+dcolor(n)+'">'+n+'</div>').join("");
+
+        ["red","green","black"].forEach(col=>{
+          const el = $("#own-"+col);
+          el.classList.remove("won","lost");
+          if(bets[col]>0){
+            const won = (col===win);
+            el.textContent = (won?"+":"-")+fmt(bets[col]);
+            el.classList.add(won?"won":"lost");
+          } else el.textContent = "0";
+          $("#tot-"+col).textContent = "0";
+        });
+
+        $("#r-status").textContent = (roll===0?"WOW! ":"")+"Rolled "+roll+" — "+
+          (payout>0 ? "You won ◆"+fmt(payout)+"!" : "No win this time");
+        if(payout>0) beep(1200,0.3,0.12);
+        addLog("🎡", win==="green"?"#6fb26b":(win==="red"?"#b04a43":"#555"),
+          "Roulette rolled <b>"+roll+"</b> ("+win+") — "+(payout>0?"won ◆"+fmt(payout):"lost ◆"+fmt(total)));
+        pageState.bets = {red:0,green:0,black:0};
+      }, 6100);
+    }));
+  });
+}
+
+/* ================================================================
+   PAGES: CONTRACTS
+================================================================ */
+const CONTRACT_TIERS = ["milspec","restricted","classified","covert"];
+function renderContracts(c){
+  let html = '<div class="page-title">Trade Up Contracts</div>'+
+    '<div class="panel"><div class="panel-body"><p class="muted center" style="margin-bottom:12px;">'+
+    'Exchange 10 items of the same rarity for 1 item of higher rarity.</p>'+
+    '<div class="contract-rarities">';
+  CONTRACT_TIERS.forEach(t=>{
+    const col = RARITIES[t].color;
+    const next = RARITIES[RARITY_ORDER[RARITY_ORDER.indexOf(t)+1]];
+    html += '<div class="ct-rarity" style="background:'+col+'22;border-color:'+col+'" data-action="contract-page" data-r="'+t+'">'+
+      RARITIES[t].name+'<small>→ '+next.name+'</small>'+
+      '<small style="opacity:.6">Normal / StatTrak™</small></div>';
+  });
+  html += '</div></div></div>';
+  c.innerHTML = html;
+}
+function renderContractPage(c, rarity, st){
+  if(!CONTRACT_TIERS.includes(rarity)){ navigate("#/contracts"); return; }
+  pageState.slots = []; // uids
+  pageState.st = st;
+  const col = RARITIES[rarity].color;
+
+  function draw(){
+    const slotsHtml = [];
+    for(let i=0;i<10;i++){
+      const uid = pageState.slots[i];
+      if(uid){
+        const it = findItem(uid);
+        slotsHtml.push('<div class="slot">'+(it?itemCardHTML(it,{showPrice:false,extra:""}):"")+
+          '<button class="x" data-slot-remove="'+i+'">✕</button></div>');
+      } else slotsHtml.push('<div class="slot empty">+</div>');
+    }
+    const avail = state.inventory.filter(it=>it.rarity===rarity && it.st===st && !it.sv &&
+      !pageState.slots.includes(it.uid));
+    const sum = pageState.slots.reduce((s,uid)=>{ const it=findItem(uid); return s+(it?it.price:0); },0);
+
+    $("#ct-slots").innerHTML = slotsHtml.join("");
+    $("#ct-sum").textContent = fmt(sum);
+    $("#ct-count").textContent = pageState.slots.length;
+    $("#ct-inv").innerHTML = avail.length
+      ? '<div class="grid">'+avail.map(it=>itemCardHTML(it)).join("")+'</div>'
+      : '<div class="empty-note">No '+RARITIES[rarity].name+' '+(st?'StatTrak™ ':'')+'items in your inventory. Open some cases!</div>';
+    $("#btn-sign").disabled = pageState.slots.length!==10;
+  }
+
+  c.innerHTML =
+    '<button class="back-btn" data-action="contracts-back">← Contracts</button>'+
+    '<div class="panel"><div class="panel-head" style="background:'+col+'33;border-color:'+col+'">'+
+      '<span>'+RARITIES[rarity].name+' '+(st?'StatTrak™':'')+' Contract</span>'+
+      '<span class="badge">10 items</span></div>'+
+    '<div class="panel-body">'+
+      '<div class="cf-select-head"><span id="ct-count">0</span>/10 items · ◆<span id="ct-sum">0</span></div>'+
+      '<div class="slots" id="ct-slots"></div>'+
+      '<div class="open-row"><button class="btn btn-primary btn-big" id="btn-sign" disabled>📜 Sign Contract</button></div>'+
+      '<div class="section-label">Your items ('+RARITIES[rarity].name+(st?', StatTrak™':'')+')</div>'+
+      '<div id="ct-inv"></div>'+
+    '</div></div>';
+
+  draw();
+
+  c.addEventListener("click", e=>{
+    const rem = e.target.closest("[data-slot-remove]");
+    if(rem){
+      const i = +rem.dataset.slotRemove;
+      pageState.slots.splice(i,1);
+      draw(); return;
+    }
+    const card = e.target.closest(".item-card[data-uid]");
+    if(card && card.closest("#ct-inv")){
+      if(pageState.slots.length>=10) return;
+      const it = findItem(card.dataset.uid);
+      if(it && it.rarity===rarity && it.st===st && !it.sv){
+        pageState.slots.push(it.uid);
+        beep(700,0.05,0.07);
+        draw();
+      }
+    }
+  }, true);
+
+  $("#btn-sign").addEventListener("click", ()=>{
+    if(pageState.slots.length!==10) return;
+    const uids = pageState.slots.slice();
+    const items = uids.map(findItem).filter(Boolean);
+    const avg = items.reduce((s,i)=>s+i.price,0)/items.length;
+    // remove inputs
+    state.inventory = state.inventory.filter(i=>!uids.includes(i.uid));
+    state.stats.contracts++;
+    // build output
+    const nextR = RARITY_ORDER[RARITY_ORDER.indexOf(rarity)+1];
+    const out = makeItem({pool:ALL_TYPES, sv:false}, nextR);
+    const [lo,hi] = PRICE_RANGE[nextR];
+    out.price = Math.max(lo, Math.min(hi, Math.round(avg*(0.85+Math.random()*0.6))));
+    if(nextR!=="rare") out.st = st; else { out.st=false; out.type="knife"; out.weapon=pick(WEAPONS.knife); out.pattern=pick(PATTERNS.rare); }
+    state.inventory.push(out);
+    save();
+    beep(1200,0.3,0.12);
+    addLog("📜", RARITIES[nextR].color, "Contract: 10× "+RARITIES[rarity].name+" → <b>"+esc(out.weapon)+" | "+esc(out.pattern)+"</b> (◆"+fmt(out.price)+")");
+    itemModal(out,
+      '<button class="btn btn-danger" data-action="sell-keep" data-uid="'+out.uid+'">Sell for ◆'+fmt(out.price)+'</button>'+
+      '<button class="btn btn-success" data-action="contract-done" data-r="'+rarity+'" data-st="'+(st?1:0)+'">Continue</button>');
+  });
+}
+
+/* ================================================================
+   PAGES: COINFLIP
+================================================================ */
+const ENEMIES = ["s1mple","NiKo","ZywOo","device","coldzera","olofmeister","GuardiaN","f0rest"];
+function renderCoinflip(c){
+  pageState.sel = [];
+  pageState.flipping = false;
+
+  function draw(){
+    const items = pageState.sel.map(findItem).filter(Boolean);
+    const sum = items.reduce((s,i)=>s+i.price,0);
+    $("#cf-count").textContent = items.length;
+    $("#cf-sum").textContent = fmt(sum);
+    $("#cf-pct").textContent = items.length?100:0;
+    $("#cf-inv").innerHTML = state.inventory.length
+      ? '<div class="grid">'+state.inventory.map(it=>
+          itemCardHTML(it,{extra:pageState.sel.includes(it.uid)?"selected":""})).join("")+'</div>'
+      : '<div class="empty-note">Your inventory is empty. Open cases to get items!</div>';
+    $("#btn-flip").disabled = items.length===0 || pageState.flipping;
+  }
+
+  c.innerHTML =
+    '<div class="page-title">Coin Flip</div>'+
+    '<div class="panel"><div class="panel-body">'+
+      '<div class="cf-wrap">'+
+        '<div class="cf-side"><div class="avatar av-user">😎</div>'+
+          '<h3>You</h3><h4><span id="cf-count">0</span>/10 items</h4>'+
+          '<h4>◆ <span id="cf-sum">0</span> (<span id="cf-pct">0</span>%)</h4></div>'+
+        '<div class="coin-stage"><div class="coin" id="coin">'+
+          '<div class="coin-face coin-ct">CT</div><div class="coin-face coin-t">T</div></div></div>'+
+        '<div class="cf-side"><div class="avatar av-enemy" id="cf-enemy-av">?</div>'+
+          '<h3 id="cf-enemy-name">No player</h3><h4>Waiting...</h4></div>'+
+      '</div>'+
+      '<div class="cf-select-head">Select 1–10 items to wager</div>'+
+      '<div class="open-row"><button class="btn btn-primary btn-big" id="btn-flip" disabled>🪙 Flip!</button></div>'+
+      '<div id="cf-inv"></div>'+
+    '</div></div>';
+
+  draw();
+
+  c.addEventListener("click", e=>{
+    const card = e.target.closest(".item-card[data-uid]");
+    if(!card || pageState.flipping) return;
+    const uid = card.dataset.uid;
+    const idx = pageState.sel.indexOf(uid);
+    if(idx>=0) pageState.sel.splice(idx,1);
+    else { if(pageState.sel.length>=10){ toast("Maximum 10 items","err"); return; } pageState.sel.push(uid); }
+    beep(650,0.04,0.06);
+    draw();
+  });
+
+  $("#btn-flip").addEventListener("click", ()=>{
+    if(pageState.flipping) return;
+    const items = pageState.sel.map(findItem).filter(Boolean);
+    if(!items.length) return;
+    const pot = items.reduce((s,i)=>s+i.price,0);
+    pageState.flipping = true;
+    // take items
+    state.inventory = state.inventory.filter(i=>!pageState.sel.includes(i.uid));
+    state.stats.coinflip++;
+    state.stats.wagered += pot;
+    const enemy = pick(ENEMIES);
+    $("#cf-enemy-name").textContent = enemy;
+    $("#cf-enemy-av").textContent = enemy[0].toUpperCase();
+    save();
+
+    const win = Math.random()<0.5;
+    const coin = $("#coin");
+    coin.style.transition="none"; coin.style.transform="rotateY(0deg)";
+    beep(500,0.1,0.08);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      startTicks();
+      coin.style.transition="transform 3.6s cubic-bezier(.2,.75,.25,1)";
+      coin.style.transform = "rotateY("+(1800+(win?0:180))+"deg)";
+    }));
+
+    setTimeout(()=>{
+      stopTicks();
+      pageState.flipping = false;
+      let payout = 0;
+      if(win){
+        payout = pot*2;
+        state.points += payout;
+        beep(1300,0.35,0.13);
+      } else beep(220,0.4,0.1);
+      save(); updateBalance();
+      addLog("🪙", win?"#6fb26b":"#b04a43",
+        "Coinflip vs <b>"+enemy+"</b> ("+(win?"CT":"T")+") — "+(win?"won ◆"+fmt(payout):"lost ◆"+fmt(pot)));
+      pageState.sel = [];
+      draw();
+      showModal(
+        '<div class="modal-head" style="background:'+(win?"#449d44":"#c9302c")+';color:#fff">'+
+          (win?"🎉 You won!":"💀 You lost")+
+          '<button onclick="closeModal()" style="background:rgba(0,0,0,.25);border-radius:6px;width:28px;height:28px;font-size:16px;">✕</button></div>'+
+        '<div class="modal-body">'+
+          '<div style="font-size:60px">'+(win?"😎":"😵")+'</div>'+
+          '<h2 style="margin:10px 0">'+(win?"CT side wins!":"T side wins")+'</h2>'+
+          '<p class="muted">vs '+esc(enemy)+' · pot ◆'+fmt(pot)+'</p>'+
+          (win?'<p style="margin-top:8px;font-weight:800;color:var(--green)">+◆'+fmt(payout)+' to your balance</p>'
+              :'<p style="margin-top:8px;font-weight:800;color:var(--red)">-◆'+fmt(pot)+'</p>')+
+        '</div>'+
+        '<div class="modal-foot"><button class="btn btn-primary" onclick="closeModal()">OK</button></div>');
+    }, 3700);
+  });
+}
+
+/* ================================================================
+   PAGES: INVENTORY
+================================================================ */
+function renderInventory(c){
+  // group identical items
+  const groups = {};
+  state.inventory.forEach(it=>{
+    const key = it.weapon+"|"+it.pattern+"|"+it.rarity+"|"+it.cond+"|"+(it.st?1:0)+"|"+(it.sv?1:0);
+    if(!groups[key]) groups[key] = {it, count:0, value:0};
+    groups[key].count++; groups[key].value += it.price;
+  });
+  const list = Object.values(groups).sort((a,b)=>b.value-a.value);
+  const total = state.inventory.reduce((s,i)=>s+i.price,0);
+  let html = '<div class="page-title">Inventory</div>'+
+    '<div class="panel"><div class="panel-head"><span>Items ('+state.inventory.length+')</span>'+
+    '<span class="case-price">Total ◆'+fmt(total)+'</span></div><div class="panel-body">';
+  if(!state.inventory.length){
+    html += '<div class="empty-note">Your inventory is empty.<br>Open cases to win skins!</div>';
+  } else {
+    html += '<div class="grid">'+
+      list.map(g=>itemCardHTML(g.it,{amt:g.count>1?g.count:null})).join("")+'</div>'+
+      '<div class="open-row" style="margin-top:14px"><button class="btn btn-danger" id="btn-sell-all">Sell all for ◆'+fmt(total)+'</button></div>';
+  }
+  html += '</div></div>';
+  c.innerHTML = html;
+
+  c.querySelectorAll(".item-card[data-uid]").forEach(card=>{
+    card.addEventListener("click", ()=>{
+      const it = findItem(card.dataset.uid);
+      if(!it) return;
+      itemModal(it,
+        '<button class="btn btn-danger" data-action="sell-one" data-uid="'+it.uid+'">Sell for ◆'+fmt(it.price)+'</button>'+
+        '<button class="btn btn-success" onclick="closeModal()">Close</button>');
+    });
+  });
+  const sellAll = $("#btn-sell-all");
+  if(sellAll) sellAll.addEventListener("click", ()=>{
+    const total = state.inventory.reduce((s,i)=>s+i.price,0);
+    showModal(
+      '<div class="modal-head" style="background:#c9302c;color:#fff">Sell all items?'+
+      '<button onclick="closeModal()" style="background:rgba(0,0,0,.25);border-radius:6px;width:28px;height:28px;font-size:16px;">✕</button></div>'+
+      '<div class="modal-body"><p>Sell <b>'+state.inventory.length+'</b> items for <b style="color:var(--gold)">◆'+fmt(total)+'</b>?</p></div>'+
+      '<div class="modal-foot"><button class="btn btn-danger" data-action="sell-all-confirm">Sell all</button>'+
+      '<button class="btn btn-success" onclick="closeModal()">Cancel</button></div>');
+  });
+}
+
+/* ================================================================
+   PAGES: LOGS / STATS
+================================================================ */
+function renderLogs(c){
+  const s = state.stats;
+  let html = '<div class="page-title">Statistics & Logs</div>'+
+    '<div class="stats-grid">'+
+    '<div class="stat"><b>'+fmt(s.cases)+'</b><span>Cases opened</span></div>'+
+    '<div class="stat"><b>'+fmt(s.roulette)+'</b><span>Roulette spins</span></div>'+
+    '<div class="stat"><b>'+fmt(s.contracts)+'</b><span>Contracts</span></div>'+
+    '<div class="stat"><b>'+fmt(s.coinflip)+'</b><span>Coin flips</span></div>'+
+    '<div class="stat"><b>◆'+fmt(s.wagered)+'</b><span>Total wagered</span></div>'+
+    '<div class="stat"><b>'+state.inventory.length+'</b><span>Items owned</span></div>'+
+    '</div>'+
+    '<div class="panel"><div class="panel-head">Recent activity</div><div class="panel-body" style="padding:0">';
+  if(!state.logs.length) html += '<div class="empty-note">No activity yet.</div>';
+  else html += state.logs.map(l=>
+    '<div class="log-row"><div class="log-ico" style="background:'+(l.color||"#334")+'22">'+l.icon+'</div>'+
+    '<div class="log-txt">'+l.text+'</div><div class="log-time">'+timeAgo(l.t)+'</div></div>').join("");
+  html += '</div></div>';
+  c.innerHTML = html;
+}
+
+/* ================================================================
+   GLOBAL ACTIONS (event delegation)
+================================================================ */
+document.addEventListener("click", e=>{
+  const el = e.target.closest("[data-action]");
+  if(!el) return;
+  const act = el.dataset.action;
+  if(act==="case-page") navigate("#/case/"+el.dataset.id);
+  else if(act==="back"){ history.back(); }
+  else if(act==="contracts-back") navigate("#/contracts");
+  else if(act==="contract-page") navigate("#/contract/"+el.dataset.r+"/normal");
+  else if(act==="contract-done"){ closeModal(); navigate("#/contract/"+el.dataset.r+"/"+(el.dataset.st==="1"?"st":"normal")); }
+  else if(act==="claim"){ state.points += 1000; save(); updateBalance(); toast("+1 000 ◆ added!","win"); beep(1000,0.2,0.1); render(); }
+  else if(act==="sell-keep"){
+    const it = findItem(el.dataset.uid);
+    if(it){ sellItem(it); closeModal(); }
+  }
+  else if(act==="sell-one"){
+    const it = findItem(el.dataset.uid);
+    if(it){ sellItem(it); closeModal(); render(); }
+  }
+  else if(act==="sell-all-confirm"){
+    const total = state.inventory.reduce((s,i)=>s+i.price,0);
+    state.points += total;
+    addLog("🎒","#888","Sold all inventory for <b>◆"+fmt(total)+"</b>");
+    state.inventory = [];
+    save(); closeModal(); updateBalance(); toast("Sold all for ◆"+fmt(total),"win"); render();
+  }
+});
+function sellItem(it){
+  state.inventory = state.inventory.filter(i=>i.uid!==it.uid);
+  state.points += it.price;
+  addLog("💰","#d9921f","Sold "+esc(it.weapon)+" | "+esc(it.pattern)+" for <b>◆"+fmt(it.price)+"</b>");
+  save(); updateBalance();
+  toast("Sold for ◆"+fmt(it.price),"win");
+  beep(900,0.15,0.1);
+}
+
+/* ================================================================
+   BALANCE / HEADER
+================================================================ */
+function updateBalance(){
+  const el = $("#balance");
+  el.textContent = fmt(state.points);
+}
+$("#nav").addEventListener("click", e=>{
+  const b = e.target.closest(".nav-btn");
+  if(b) navigate("#/"+b.dataset.route);
+});
+$("#reset-btn").addEventListener("click", ()=>{
+  showModal(
+    '<div class="modal-head" style="background:#c9302c;color:#fff">Reset progress?'+
+    '<button onclick="closeModal()" style="background:rgba(0,0,0,.25);border-radius:6px;width:28px;height:28px;font-size:16px;">✕</button></div>'+
+    '<div class="modal-body"><p>All diamonds, items and stats will be reset. Continue?</p></div>'+
+    '<div class="modal-foot"><button class="btn btn-danger" id="reset-yes">Reset</button>'+
+    '<button class="btn btn-success" onclick="closeModal()">Cancel</button></div>');
+  $("#reset-yes").addEventListener("click", ()=>{
+    state = defaultState();
+    state.muted = muted;
+    save(); closeModal(); updateBalance(); render();
+    toast("Progress reset");
+  });
+});
+$("#mute-btn").addEventListener("click", ()=>{
+  muted = !muted; state.muted = muted; save();
+  $("#mute-btn").textContent = muted ? "🔇" : "🔊";
+});
+$("#mute-btn").textContent = muted ? "🔇" : "🔊";
+
+/* ================================================================
+   FULLSCREEN (first tap)
+================================================================ */
+function enterFullscreen(){
+  const el = document.documentElement;
+  try{
+    const p = el.requestFullscreen ? el.requestFullscreen()
+          : el.webkitRequestFullscreen ? el.webkitRequestFullscreen()
+          : el.msRequestFullscreen ? el.msRequestFullscreen() : null;
+    if(p && p.catch) p.catch(()=>{});
+  }catch(err){}
+  try{
+    if(screen.orientation && screen.orientation.lock){
+      screen.orientation.lock("landscape").catch(()=>{});
+    }
+  }catch(err){}
+}
+$("#start-btn").addEventListener("click", ()=>{
+  enterFullscreen();
+  // resume audio context on gesture
+  try{ audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+       if(audioCtx.state==="suspended") audioCtx.resume(); }catch(e){}
+  $("#start-overlay").classList.add("hidden");
+  beep(1000,0.15,0.1);
+});
+$("#fs-btn").addEventListener("click", ()=>{
+  const isFs = document.fullscreenElement || document.webkitFullscreenElement;
+  if(!isFs) enterFullscreen();
+  else {
+    try{ (document.exitFullscreen||document.webkitExitFullscreen).call(document); }catch(e){}
+  }
+});
+
+/* ================================================================
+   INIT
+================================================================ */
+if(location.hash==="" || location.hash==="#") location.hash = "#/cases";
+render();
+</script>
+</body>
+</html>
